@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תוספת תשלומים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+
+<!-- מקור האמת לאחוזים. זהה ל-data/fee-table.json, ויש שער ב-test.mjs
+     שמפיל את הריצה אם השניים נפרדו. האחוז במאיות האחוז: 2250 = 2.250% -->
+<script id="fee-table" type="application/json">
+{"4":2250,"5":2443,"6":2636,"7":2828,"8":3025,"9":3211,"10":3402,"11":3592,
+ "12":3782,"13":4074,"14":4271,"15":4466,"16":4662,"17":4857,"18":5051,
+ "19":5254,"20":5828,"21":6039,"22":6249,"23":6459,"24":6669}
+</script>
+
+<style>
+:root{
+  --paper:#F4F6F7;  --surface:#FFFFFF;  --ink:#10151C;   --muted:#5C6873;
+  --rule:#DCE3E6;   --rule-soft:#EBF0F2;
+  --accent:#0B6E60; --accent-soft:#E4F1EE; --accent-line:#9FCFC6; --on-accent:#FFFFFF;
+  --warn:#8F5410;   --warn-soft:#FBF0E0;
+  --shadow:0 1px 2px rgba(16,21,28,.06), 0 8px 24px -12px rgba(16,21,28,.18);
+  --step:clamp(.9rem,.55rem + 1.1vw,1.05rem);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0C1116; --surface:#141C23; --ink:#E8EDF0; --muted:#94A2AD;
+    --rule:#28333C;  --rule-soft:#1B242B;
+    --accent:#48C7B0; --accent-soft:#11302C; --accent-line:#2C6D62; --on-accent:#08201C;
+    --warn:#E3A652;   --warn-soft:#2B2214;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0C1116; --surface:#141C23; --ink:#E8EDF0; --muted:#94A2AD;
+  --rule:#28333C;  --rule-soft:#1B242B;
+  --accent:#48C7B0; --accent-soft:#11302C; --accent-line:#2C6D62; --on-accent:#08201C;
+  --warn:#E3A652;   --warn-soft:#2B2214;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font:400 var(--step)/1.55 Assistant,"Segoe UI",system-ui,sans-serif;
+  font-variant-numeric:tabular-nums;
+  padding:clamp(16px,3vw,40px) clamp(12px,3vw,24px) 64px;
+}
+.wrap{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+
+/* ── כותרת ─────────────────────────────────────────────── */
+.masthead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.masthead h1{
+  margin:0; font:700 clamp(1.5rem,1.1rem + 1.4vw,2rem)/1.2 "Frank Ruhl Libre",Assistant,serif;
+  letter-spacing:-.01em;
+}
+.masthead .org{
+  font-size:.75rem; font-weight:700; letter-spacing:.14em; color:var(--muted);
+  text-transform:uppercase;
+}
+.masthead p{margin:0;flex-basis:100%;color:var(--muted);font-size:.9rem;max-width:60ch}
+
+/* ── קלט ───────────────────────────────────────────────── */
+.panel{
+  background:var(--surface); border:1px solid var(--rule); border-radius:10px;
+  padding:clamp(14px,2.4vw,22px);
+}
+.field-label{
+  display:block; font-size:.78rem; font-weight:700; letter-spacing:.08em;
+  color:var(--muted); text-transform:uppercase; margin-bottom:8px;
+}
+.amount-row{display:flex;align-items:stretch;max-width:340px}
+.amount-row input{
+  flex:1 1 auto; min-width:0; appearance:none;
+  font:700 1.75rem/1 "Frank Ruhl Libre",Assistant,serif; font-variant-numeric:tabular-nums;
+  color:var(--ink); background:transparent;
+  border:1px solid var(--rule); border-radius:8px 0 0 8px; border-inline-end:0;
+  padding:12px 14px; text-align:start;
+}
+.amount-row input:focus-visible{outline:2px solid var(--accent);outline-offset:1px;position:relative;z-index:1}
+.amount-row .unit{
+  display:grid; place-items:center; padding:0 16px; font-size:1.25rem; color:var(--muted);
+  border:1px solid var(--rule); border-radius:0 8px 8px 0; background:var(--rule-soft);
+}
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+
+.chips{
+  /* 21 שבבים, ולכן 7 עמודות נותנות שלוש שורות מלאות בדיוק.
+     auto-fit היה משאיר שורה שנייה חלקית ופער בקצה. */
+  display:grid; gap:6px;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+}
+.chip{
+  font:600 1rem/1 Assistant,sans-serif; font-variant-numeric:tabular-nums;
+  padding:11px 4px; text-align:center; cursor:pointer;
+  color:var(--ink); background:var(--surface);
+  border:1px solid var(--rule); border-radius:7px;
+  transition:background .12s ease, border-color .12s ease;
+}
+.chip:hover{background:var(--rule-soft)}
+@media (max-width:440px){ .chip{padding:10px 2px;font-size:.92rem} .chips{gap:5px} }
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.chip[aria-pressed="true"]{
+  background:var(--accent); border-color:var(--accent);
+  color:var(--on-accent); font-weight:700;
+}
+
+/* ── התשובה ────────────────────────────────────────────── */
+.answer{
+  background:var(--surface); border:1px solid var(--rule); border-radius:10px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.answer > .head{
+  display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+  padding:14px clamp(14px,2.4vw,22px); border-bottom:1px solid var(--rule-soft);
+}
+.answer > .head h2{
+  margin:0; font:700 .82rem/1 Assistant,sans-serif; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted);
+}
+.pct-tag{
+  font-size:.85rem; font-weight:700; color:var(--accent); white-space:nowrap;
+  background:var(--accent-soft); border:1px solid var(--accent-line);
+  border-radius:999px; padding:3px 11px;
+}
+.ledger{margin:0; padding:clamp(14px,2.4vw,22px); display:flex; flex-direction:column; gap:9px}
+.line{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
+.line dt{color:var(--muted)}
+.line dd{margin:0;font-weight:600}
+.line.add dd{color:var(--accent)}
+.line.total{margin-top:4px; padding-top:13px; border-top:1px solid var(--rule)}
+.line.total dt{color:var(--ink);font-weight:700}
+.line.total dd{font:700 1.85rem/1 "Frank Ruhl Libre",Assistant,serif}
+
+.monthly{
+  border-top:1px solid var(--rule-soft); background:var(--rule-soft);
+  padding:clamp(14px,2.4vw,22px);
+  display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+}
+.mcard h3{
+  margin:0 0 5px; font:700 .76rem/1 Assistant,sans-serif; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted);
+}
+.mcard .big{font:700 1.5rem/1.1 "Frank Ruhl Libre",Assistant,serif}
+.mcard .tail{font-size:.88rem;color:var(--muted);margin-top:3px}
+.mcard.hi .big{color:var(--accent)}
+
+.notice{
+  margin:0; padding:12px 14px; border-radius:8px; font-size:.92rem;
+  background:var(--warn-soft); color:var(--warn); border:1px solid currentColor;
+}
+.notice[hidden]{display:none}
+.notice b{font-weight:700}
+
+/* ── טבלת האפשרויות ────────────────────────────────────── */
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:430px;font-size:.93rem}
+caption{
+  text-align:start; padding:0 0 10px;
+  font:700 .82rem/1 Assistant,sans-serif; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted);
+}
+th,td{padding:7px 10px;text-align:start}
+thead th{
+  font-size:.74rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--muted); border-bottom:1px solid var(--rule); padding-bottom:9px;
+}
+tbody tr{border-bottom:1px solid var(--rule-soft);cursor:pointer}
+tbody tr:hover{background:var(--rule-soft)}
+tbody tr:last-child{border-bottom:0}
+/* המדרגות אמיתיות: הקפיצה באחוז בין 12 ל-13 ובין 19 ל-20 גדולה
+   פי 1.5 ופי 2.8 מכל שאר המעברים. הקו מציין אותן ואינו קישוט. */
+tbody tr.tier{border-bottom:2px solid var(--accent-line)}
+tbody tr.sel{background:var(--accent-soft)}
+tbody tr.sel td{font-weight:700;color:var(--accent)}
+tbody tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.legend{margin:10px 0 0;font-size:.82rem;color:var(--muted);max-width:62ch}
+
+footer{color:var(--muted);font-size:.82rem;line-height:1.65;max-width:70ch}
+footer p{margin:0}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="org">Triple Y</span>
+    <h1>תוספת תשלומים</h1>
+    <p>מזינים סכום עסקה ובוחרים מספר תשלומים. התוספת מחושבת כאחוז מהסכום, ומעוגלת כלפי מעלה לעשרות שקלים.</p>
+  </header>
+
+  <section class="panel" aria-label="נתוני העסקה">
+    <label class="field-label" for="amount">סכום העסקה</label>
+    <div class="amount-row">
+      <input id="amount" type="number" inputmode="decimal" min="0" step="1" value="4000" autocomplete="off">
+      <span class="unit" aria-hidden="true">₪</span>
+    </div>
+
+    <span class="field-label" id="lbl-pay" style="margin-top:20px">מספר תשלומים</span>
+    <div class="chips" id="chips" role="group" aria-labelledby="lbl-pay"></div>
+  </section>
+
+  <p class="notice" id="notice" hidden></p>
+
+  <section class="answer" aria-live="polite">
+    <div class="head">
+      <h2>התשובה ללקוח</h2>
+      <span class="pct-tag" id="pct"></span>
+    </div>
+
+    <dl class="ledger">
+      <div class="line"><dt>סכום מקורי</dt><dd id="o-base"></dd></div>
+      <div class="line add"><dt>תוספת על התשלומים</dt><dd id="o-fee"></dd></div>
+      <div class="line total"><dt>סך הכול לתשלום</dt><dd id="o-total"></dd></div>
+    </dl>
+
+    <div class="monthly">
+      <div class="mcard">
+        <h3>בחודש, בלי התוספת</h3>
+        <div class="big" id="o-wo"></div>
+        <div class="tail" id="o-wo-tail"></div>
+      </div>
+      <div class="mcard hi">
+        <h3>בחודש, עם התוספת</h3>
+        <div class="big" id="o-w"></div>
+        <div class="tail" id="o-w-tail"></div>
+      </div>
+      <div class="mcard">
+        <h3>ההפרש לחודש</h3>
+        <div class="big" id="o-diff"></div>
+        <div class="tail" id="o-diff-tail"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="table-wrap">
+      <table>
+        <caption id="cap">כל האפשרויות</caption>
+        <thead>
+          <tr>
+            <th scope="col">תשלומים</th>
+            <th scope="col">אחוז</th>
+            <th scope="col">תוספת</th>
+            <th scope="col">סך הכול</th>
+            <th scope="col">בחודש</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p class="legend">הקו המפריד מסמן את שתי המדרגות: המעבר מ-12 ל-13 ומ-19 ל-20 מייקר יותר מכל מעבר אחר בטבלה.</p>
+  </section>
+
+  <footer>
+    <p>החישוב: הסכום כפול האחוז שבטבלה, ואז עיגול כלפי מעלה לעשרות שקלים. עד 3 תשלומים אין תוספת, ומעל 24 אין נתון בטבלה.</p>
+    <p>התשלום החודשי אינו מתחלק תמיד שווה בשווה. השארית נגבית בתשלום הראשון, כמקובל בחברות האשראי.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var PCT    = JSON.parse(document.getElementById("fee-table").textContent);
+  var COUNTS = Object.keys(PCT).map(Number).sort(function(a,b){ return a-b; });
+  var MIN    = COUNTS[0];
+  var TIERS  = { 12:1, 19:1 };   /* אחרי כל אחת מהן מגיעה קפיצת אחוז חריגה */
+
+  var state = { amount:4000, payments:12 };
+
+  /* התוספת. חשבון שלמים בלבד: הסכום באגורות והאחוז במאיות האחוז,
+     ולכן אין כאן ולו פעולה אחת בנקודה צפה שיכולה להקפיץ עשרת שלמה. */
+  function fee(amount, n){
+    if(!(amount > 0) || !PCT[n]) return 0;
+    return Math.ceil(Math.round(amount * 100) * PCT[n] / 1e8) * 10;
+  }
+
+  /* פיצול לתשלומים. השארית נופלת על התשלום הראשון, כמו בחברות האשראי. */
+  function split(sum, n){
+    var c = Math.round(sum * 100), rest = Math.floor(c / n), first = c - rest * (n - 1);
+    return { first:first/100, rest:rest/100, even:(first === rest) };
+  }
+
+  function nis(v, dp){
+    dp = dp || 0;
+    return v.toLocaleString("he-IL", { minimumFractionDigits:dp, maximumFractionDigits:dp }) + " ₪";
+  }
+
+  var chips = document.getElementById("chips");
+  COUNTS.forEach(function(n){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.textContent = n;
+    b.setAttribute("aria-label", n + " תשלומים");
+    b.addEventListener("click", function(){ state.payments = n; render(); });
+    chips.appendChild(b);
+  });
+
+  var amountEl = document.getElementById("amount");
+  amountEl.addEventListener("input", function(){
+    var v = parseFloat(amountEl.value);
+    state.amount = (isFinite(v) && v > 0) ? v : 0;
+    render();
+  });
+
+  function set(id, txt){ document.getElementById(id).textContent = txt; }
+
+  function render(){
+    var a = state.amount, n = state.payments;
+
+    for(var i = 0; i < chips.children.length; i++){
+      chips.children[i].setAttribute("aria-pressed", COUNTS[i] === n ? "true" : "false");
+    }
+
+    var f = fee(a, n), total = a + f;
+    var wo = split(a, n), w = split(total, n);
+
+    set("pct", PCT[n] ? (PCT[n] / 1000).toFixed(3) + "%" : "ללא תוספת");
+    set("o-base",  nis(a));
+    set("o-fee",   f > 0 ? nis(f) : "אין");
+    set("o-total", nis(total));
+
+    set("o-wo", nis(wo.first, 2));
+    set("o-wo-tail", wo.even ? n + " תשלומים שווים"
+                             : "ואחריו " + (n - 1) + " תשלומים של " + nis(wo.rest, 2));
+    set("o-w",  nis(w.first, 2));
+    set("o-w-tail",  w.even  ? n + " תשלומים שווים"
+                             : "ואחריו " + (n - 1) + " תשלומים של " + nis(w.rest, 2));
+    set("o-diff", nis(f / n, 2));
+    set("o-diff-tail", f > 0 ? "לחודש, לאורך " + n + " חודשים" : "אין תוספת בתשלומים האלה");
+
+    var notice = document.getElementById("notice");
+    if(!(a > 0)){
+      notice.hidden = false;
+      notice.innerHTML = "<b>אין סכום.</b> הזינו את סכום העסקה בשקלים.";
+    } else if(n < MIN){
+      notice.hidden = false;
+      notice.innerHTML = "<b>עד " + (MIN - 1) + " תשלומים אין תוספת.</b> הטבלה מתחילה ב-" + MIN + " תשלומים.";
+    } else {
+      notice.hidden = true;
+    }
+
+    set("cap", a > 0 ? "כל האפשרויות עבור " + nis(a) : "כל האפשרויות");
+
+    var rows = COUNTS.map(function(k){
+      var kf = fee(a, k), kt = a + kf, ks = split(kt, k);
+      var cls = (k === n ? "sel " : "") + (TIERS[k] ? "tier" : "");
+      return '<tr class="' + cls + '" data-n="' + k + '">'
+        + "<td>" + k + "</td>"
+        + "<td>" + (PCT[k] / 1000).toFixed(3) + "%</td>"
+        + "<td>" + nis(kf) + "</td>"
+        + "<td>" + nis(kt) + "</td>"
+        + "<td>" + nis(ks.first, 2) + "</td>"
+        + "</tr>";
+    }).join("");
+    document.getElementById("tbody").innerHTML = rows;
+  }
+
+  document.getElementById("tbody").addEventListener("click", function(e){
+    var tr = e.target.closest("tr[data-n]");
+    if(tr){ state.payments = Number(tr.dataset.n); render(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
