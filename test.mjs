@@ -84,24 +84,6 @@ const html = JSON.parse(block[1]);
 for (const [n, v] of Object.entries(json)) {
   ok(html[n] === v, `index.html: ${n} תשלומים = ${html[n]} ולא ${v}`);
 }
-/* אפשרויות העיצוב חולקות טבלה משלהן ב-variants/shared.js, ולכן
-   גם היא נבדקת. שלוש נקודות אמת היו מתפצלות בשקט. */
-const sharedPath = new URL('./variants/shared.js', import.meta.url);
-if (existsSync(sharedPath)) {
-  const src = readFileSync(sharedPath, 'utf8');
-  const blk = src.match(/var PCT = \{([\s\S]*?)\};/);
-  ok(!!blk, 'לא נמצאה טבלת PCT ב-variants/shared.js');
-  if (blk) {
-    const shared = {};
-    for (const m of blk[1].matchAll(/(\d{1,2})\s*:\s*(\d{4})/g)) shared[m[1]] = Number(m[2]);
-    for (const [n, v] of Object.entries(json)) {
-      ok(shared[n] === v, `shared.js: ${n} תשלומים = ${shared[n]} ולא ${v}`);
-    }
-    ok(Object.keys(shared).length === Object.keys(json).length,
-       `shared.js מחזיק ${Object.keys(shared).length} שורות ולא ${Object.keys(json).length}`);
-  }
-}
-
 /* שער נגד "עבר כי לא נמצא כלום" */
 ok(Object.keys(html).length === Object.keys(json).length,
    `index.html מחזיק ${Object.keys(html).length} שורות ולא ${Object.keys(json).length}`);

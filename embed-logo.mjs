@@ -46,14 +46,12 @@ const uri = 'data:image/png;base64,' + png.toString('base64');
 const page = readFileSync(PAGE, 'utf8');
 
 /* מחליף את הערך הקיים, ולא מציין מקום חד-פעמי, כדי שהסקריפט יהיה
-   אידמפוטנטי וניתן להרצה חוזרת. שתי צורות: תגית img בדפים, וקבוע
-   בשם LOGO ב-shared.js שמשרת את אפשרויות העיצוב. */
+   אידמפוטנטי וניתן להרצה חוזרת. */
 const FORMS = [
   /(<img\s+src=")(?:data:image\/png;base64,[^"]*|__LOGO__)(")/,
-  /(var LOGO = ")(?:data:image\/png;base64,[^"]*|__LOGO__)(")/,
 ];
 
-const targets = [PAGE, new URL('./variants/shared.js', import.meta.url)];
+const targets = [PAGE];
 let touched = 0;
 
 for (const t of targets) {
