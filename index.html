@@ -23,106 +23,103 @@
 <style>
 /* ── הצבעים נמדדו מהחנות החיה ולא נבחרו בעין ──
    רקע #FFFFFF · טקסט rgb(18,18,18) · כפתור שחור מלא · פינות ישרות.
-   הדף מחויב למראה בהיר אחד, כמו החנות, ואין בו מצב כהה.
+   הדף מחויב למראה בהיר אחד, כמו החנות, ואין בו מצב כהה:
    הלוגו נושא שחור, ועל רקע כהה הוא היה נעלם. */
 :root{
-  --bg:#EDF0F2;         /* קרקע אפורה רכה, כדי שהכרטיסים הלבנים יקבלו נוכחות */
+  --bg:#EDF0F2;      /* קרקע אפורה רכה, כדי שהכרטיסים הלבנים יקבלו נוכחות */
   --card:#FFFFFF;
   --ink:#121212;
-  --muted:#6C7378;      /* אפור עם נטייה קרירה זעירה, אל הציאן שבלוגו */
+  --muted:#6C7378;   /* אפור עם נטייה קרירה זעירה, אל הציאן שבלוגו */
   --rule:#E2E5E7;
-  --soft:#F5F7F8;
+  --soft:#F7F9FA;
   --err:#B42318;
   --err-bg:#FEF3F2;
-  --shadow:0 1px 2px rgba(18,18,18,.05), 0 14px 34px -18px rgba(18,18,18,.30);
+  --shadow:0 1px 2px rgba(18,18,18,.05), 0 14px 34px -20px rgba(18,18,18,.28);
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{
   margin:0; background:var(--bg); color:var(--ink);
-  font:400 16px/1.55 Rubik,"Segoe UI",system-ui,sans-serif;
+  font:400 17px/1.6 Rubik,"Segoe UI",system-ui,sans-serif;
   font-variant-numeric:tabular-nums;
-  padding:clamp(28px,5vw,60px) clamp(16px,4vw,24px) 60px;
+  padding:clamp(26px,4vw,48px) 20px 60px;
 }
-.wrap{max-width:540px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
 
 /* ── כותרת ─────────────────────────────────── */
-.masthead{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
-.masthead img{width:clamp(140px,34vw,176px);height:auto;display:block}
-.masthead h1{margin:0;font-size:1.35rem;font-weight:700;letter-spacing:-.01em}
+.masthead{text-align:center}
+.masthead img{width:164px;height:auto;display:inline-block}
+.masthead h1{margin:12px 0 0;font-size:1.35rem;font-weight:700}
 
 /* ── קלט ───────────────────────────────────── */
 .inputs{
   background:var(--card); border:1px solid var(--rule); box-shadow:var(--shadow);
-  padding:clamp(16px,4vw,22px);
-  display:grid; gap:18px; grid-template-columns:1fr 1fr;
+  padding:22px clamp(18px,3vw,28px);
+  display:grid; gap:22px; grid-template-columns:1fr 1fr;
 }
-@media (max-width:440px){ .inputs{grid-template-columns:1fr} }
-.field label{
-  display:block; font-size:.82rem; font-weight:500; color:var(--muted); margin-bottom:7px;
-}
-.hint{font-weight:400;opacity:.75;white-space:nowrap}
+@media (max-width:560px){ .inputs{grid-template-columns:1fr} }
+.field label{display:block;font-size:.95rem;color:var(--muted);margin-bottom:8px}
+.hint{opacity:.75;white-space:nowrap}
 .box{display:flex;align-items:stretch;border:1px solid var(--ink);background:var(--card)}
 .box input{
-  flex:1 1 auto; min-width:0; width:100%;
-  font:700 1.5rem/1 Rubik,sans-serif; font-variant-numeric:tabular-nums;
-  color:var(--ink); background:transparent; border:0; outline:0;
-  padding:13px 14px; text-align:start;
+  flex:1 1 auto; min-width:0; width:100%; border:0; outline:0; background:transparent;
+  font:700 1.75rem/1 Rubik,sans-serif; font-variant-numeric:tabular-nums; color:var(--ink);
+  padding:15px 16px; text-align:start;
 }
 .box .suffix{
-  display:grid; place-items:center; padding:0 14px;
-  font-size:1rem; color:var(--muted); background:var(--soft);
-  border-inline-start:1px solid var(--rule);
+  display:grid; place-items:center; padding:0 16px; font-size:1.05rem; color:var(--muted);
+  background:var(--soft); border-inline-start:1px solid var(--rule);
 }
 /* מסגרת המיקוד היא הכפלת הקו, ולא טבעת נוספת. שומרת על הפינה הישרה. */
 .box:focus-within{box-shadow:inset 0 0 0 1px var(--ink)}
 .field.bad .box{border-color:var(--err);background:var(--err-bg)}
 .field.bad .box .suffix{background:transparent}
 
-.err{
-  display:flex; gap:6px; align-items:flex-start;
-  margin:7px 0 0; font-size:.82rem; color:var(--err); line-height:1.4;
-}
+.err{display:flex;gap:6px;align-items:flex-start;margin:8px 0 0;font-size:.9rem;
+  color:var(--err);line-height:1.45}
 .err[hidden]{display:none}
-.err::before{content:"!";
-  flex:0 0 auto; width:15px; height:15px; margin-top:2px;
-  display:grid; place-items:center; border-radius:50%;
-  background:var(--err); color:#fff; font-size:.68rem; font-weight:700;
-}
+.err::before{content:"!";flex:0 0 auto;width:17px;height:17px;margin-top:3px;display:grid;
+  place-items:center;border-radius:50%;background:var(--err);color:#fff;font-size:.72rem;font-weight:700}
 
 /* ── התשובה ────────────────────────────────── */
-.answer{background:var(--card);border:1px solid var(--ink);box-shadow:var(--shadow)}
+#answer{display:flex;flex-direction:column;align-items:center;gap:22px}
+#answer.void{opacity:.26}
 
-/* 🔴 הגוש השחור הוא הנתון שהמוכר אומר ללקוח, ולכן הוא הדבר הגדול בדף.
-   הכרעת יובל 06.09.2026: התוספת חשובה יותר מהסך הכול, ולכן היא ההיררכיה. */
-.hero{background:var(--ink);color:var(--card);padding:clamp(22px,5vw,30px) 18px;text-align:center}
-.hero .eyebrow{
-  font-size:.71rem; font-weight:500; letter-spacing:.17em;
-  color:rgba(255,255,255,.6);
+/* 🔴 הגוש השחור עומד בפני עצמו, צר יותר מהשורה שמתחתיו וממורכז.
+   הכרעת יובל 06.09.2026: הוא לא צריך להיות באורך של הקוביות. */
+.fee{
+  width:100%; max-width:520px;
+  background:var(--ink); color:#fff; box-shadow:var(--shadow);
+  padding:20px 26px;
+  display:flex; align-items:baseline; justify-content:center; gap:18px; flex-wrap:wrap;
 }
-.hero .amount{
-  margin:12px 0 7px; font-weight:700; line-height:1; letter-spacing:-.02em;
-  font-size:clamp(2.7rem,12vw,3.5rem);
+.fee .k{font-size:1.1rem;color:rgba(255,255,255,.8)}
+.fee .v{font-size:clamp(2.1rem,5vw,2.5rem);font-weight:700;line-height:1.05;letter-spacing:-.01em}
+
+/* בטלפון המספר עולה מעל הכיתוב, בבקשת יובל. */
+@media (max-width:640px){
+  .fee{flex-direction:column;gap:2px;text-align:center;padding:22px 20px}
+  .fee .v{order:-1}
 }
-.hero .caption{font-size:.93rem;color:rgba(255,255,255,.8)}
 
-.ledger{margin:0;padding:16px clamp(16px,4vw,22px);display:flex;flex-direction:column;gap:10px}
-.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.row dt{color:var(--muted);font-size:.95rem}
-.row dd{margin:0;font-weight:500}
-.row.total{margin-top:4px;padding-top:12px;border-top:1px solid var(--rule)}
-.row.total dt{color:var(--ink);font-weight:700}
-.row.total dd{font-size:1.25rem;font-weight:700}
-
-.monthly{border-top:1px solid var(--rule);display:grid;grid-template-columns:1fr 1fr}
-.mcell{padding:15px clamp(16px,4vw,22px)}
-.mcell + .mcell{border-inline-start:1px solid var(--rule)}
-.mcell h3{margin:0 0 3px;font-size:.79rem;font-weight:400;color:var(--muted)}
-.mcell .v{font-size:1.2rem;font-weight:700;line-height:1.2}
-.mcell.hi{background:var(--soft)}
-
-/* מצב שגיאה: הכרטיס מתעמעם ולא מציג מספרים שאינם נכונים */
-.answer.void .hero,.answer.void .ledger,.answer.void .monthly{opacity:.26}
+.strip{
+  width:100%; background:var(--card); border:1px solid var(--rule); box-shadow:var(--shadow);
+  display:grid; grid-template-columns:repeat(4,1fr);
+}
+@media (max-width:840px){ .strip{grid-template-columns:1fr 1fr} }
+@media (max-width:430px){ .strip{grid-template-columns:1fr} }
+.cell{padding:22px clamp(16px,2.4vw,24px)}
+.cell + .cell{border-inline-start:1px solid var(--rule)}
+@media (max-width:840px){
+  .cell:nth-child(3),.cell:nth-child(4){border-top:1px solid var(--rule)}
+  .cell:nth-child(3){border-inline-start:0}
+}
+@media (max-width:430px){
+  .cell + .cell{border-inline-start:0;border-top:1px solid var(--rule)}
+}
+.cell h3{margin:0 0 8px;font-size:.98rem;font-weight:400;color:var(--muted);line-height:1.3}
+.cell .v{font-size:1.85rem;font-weight:700;line-height:1.1}
+.cell.soft{background:var(--soft)}
 </style>
 </head>
 <body>
@@ -154,29 +151,19 @@ body{
     </div>
   </section>
 
-  <section class="answer" id="answer" aria-live="polite">
-    <div class="hero">
-      <div class="eyebrow">התשובה ללקוח</div>
-      <div class="amount" id="o-fee"></div>
-      <div class="caption" id="o-caption"></div>
+  <div id="answer" aria-live="polite">
+    <div class="fee">
+      <span class="k">תוספת על התשלומים</span>
+      <span class="v" id="o-fee"></span>
     </div>
 
-    <dl class="ledger">
-      <div class="row"><dt>סכום מקורי</dt><dd id="o-base"></dd></div>
-      <div class="row total"><dt>סך הכול לתשלום</dt><dd id="o-total"></dd></div>
-    </dl>
-
-    <div class="monthly">
-      <div class="mcell">
-        <h3>לחודש, בלי התוספת</h3>
-        <div class="v" id="o-wo"></div>
-      </div>
-      <div class="mcell hi">
-        <h3>לחודש, עם התוספת</h3>
-        <div class="v" id="o-w"></div>
-      </div>
+    <div class="strip">
+      <div class="cell"><h3>סכום מקורי</h3><div class="v" id="o-base"></div></div>
+      <div class="cell"><h3>סך הכול לתשלום</h3><div class="v" id="o-total"></div></div>
+      <div class="cell soft"><h3>תשלום ראשון</h3><div class="v" id="o-first"></div></div>
+      <div class="cell soft"><h3 id="o-restlabel"></h3><div class="v" id="o-rest"></div></div>
     </div>
-  </section>
+  </div>
 
 </div>
 
@@ -194,6 +181,19 @@ body{
     return Math.ceil(Math.round(amount * 100) * PCT[n] / 1e8) * 10;
   }
 
+  /* 🔴 פריסת התשלומים, הכרעת יובל 06.09.2026:
+     **כל התוספת נגבית בתשלום הראשון.**
+       תשלום ראשון  = הסכום המקורי חלקי n, ועוד התוספת כולה
+       שאר התשלומים = הסכום המקורי חלקי n
+     השארית של החלוקה נופלת גם היא על הראשון, ולכן הסכימה חוזרת
+     בדיוק לסך הכול ולא נעלמת אגורה. יש על כך שער ב-test.mjs. */
+  function plan(amount, n){
+    var f = fee(amount, n), total = amount + f;
+    var rest = Math.floor(Math.round(amount * 100) / n);            /* באגורות */
+    var first = Math.round(total * 100) - rest * (n - 1);
+    return { fee:f, total:total, first:first / 100, rest:rest / 100 };
+  }
+
   function nis(v, dp){
     dp = dp || 0;
     return v.toLocaleString("he-IL", { minimumFractionDigits:dp, maximumFractionDigits:dp }) + " ₪";
@@ -207,7 +207,7 @@ body{
      ומחזיר מחרוזת ריקה, ואז אי אפשר להבחין בין "הוקלדה אות" לבין
      "השדה ריק", ולכן אי אפשר להציג את ההודעה הנכונה. */
   function checkAmount(raw){
-    var s = raw.trim().replace(/,/g, "");
+    var s = String(raw).trim().replace(/,/g, "");
     if(s === "")                     return { err:"יש להזין את סכום העסקה" };
     if(!/^\d+(\.\d{1,2})?$/.test(s)) return { err:"סכום העסקה יכול להכיל ספרות בלבד" };
     var v = parseFloat(s);
@@ -216,23 +216,23 @@ body{
   }
 
   function checkPayments(raw){
-    var s = raw.trim();
-    if(s === "")            return { err:"יש להזין מספר תשלומים" };
-    if(!/^\d+$/.test(s))    return { err:"מספר התשלומים יכול להכיל ספרות שלמות בלבד" };
+    var s = String(raw).trim();
+    if(s === "")         return { err:"יש להזין מספר תשלומים" };
+    if(!/^\d+$/.test(s)) return { err:"מספר התשלומים יכול להכיל ספרות שלמות בלבד" };
     var v = parseInt(s, 10);
-    if(v > MAX)             return { err:"ניתן לבחור עד " + MAX + " תשלומים בלבד" };
-    if(v < MIN)             return { err:"ניתן לבחור מ-" + MIN + " תשלומים ומעלה" };
+    if(v > MAX)          return { err:"ניתן לבחור עד " + MAX + " תשלומים בלבד" };
+    if(v < MIN)          return { err:"ניתן לבחור מ-" + MIN + " תשלומים ומעלה" };
     return { value:v };
   }
 
+  function set(id, txt){ var e = document.getElementById(id); if(e) e.textContent = txt; }
+
   function mark(fieldId, errId, res){
     var f = document.getElementById(fieldId), e = document.getElementById(errId);
-    if(res.err){ f.classList.add("bad"); e.hidden = false; e.textContent = res.err; }
-    else       { f.classList.remove("bad"); e.hidden = true; e.textContent = ""; }
+    if(f) f.classList.toggle("bad", !!res.err);
+    if(e){ e.hidden = !res.err; e.textContent = res.err || ""; }
     return !res.err;
   }
-
-  function set(id, txt){ document.getElementById(id).textContent = txt; }
 
   function render(){
     var a = checkAmount(amountEl.value);
@@ -241,21 +241,20 @@ body{
     var okN = mark("f-pay", "e-pay", n);
 
     var answer = document.getElementById("answer");
-    if(!okA || !okN){ answer.classList.add("void"); return; }
-    answer.classList.remove("void");
+    answer.classList.toggle("void", !(okA && okN));
+    if(!(okA && okN)) return;
 
-    var f = fee(a.value, n.value), total = a.value + f;
+    var p = plan(a.value, n.value);
 
-    set("o-fee",     nis(f));
-    set("o-caption", "תוספת על " + n.value + " תשלומים");
-    set("o-base",    nis(a.value));
-    set("o-total",   nis(total));
-    set("o-wo",      nis(a.value / n.value, 2));
-    set("o-w",       nis(total / n.value, 2));
+    set("o-fee",       nis(p.fee));
+    set("o-base",      nis(a.value));
+    set("o-total",     nis(p.total));
+    set("o-first",     nis(p.first, 2));
+    set("o-rest",      nis(p.rest, 2));
+    set("o-restlabel", (n.value - 1) + " התשלומים הבאים");
   }
 
-  /* עיצוב הסכום ביציאה מהשדה בלבד. הוספת פסיקים תוך כדי הקלדה
-     מזיזה את הסמן. */
+  /* מפריד אלפים ביציאה מהשדה בלבד. הוספתו תוך כדי הקלדה מזיזה את הסמן. */
   amountEl.addEventListener("blur", function(){
     var r = checkAmount(amountEl.value);
     if(r.value !== undefined){
