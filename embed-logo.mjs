@@ -45,10 +45,27 @@ console.log(`מידות: ${png.readUInt32BE(16)}x${png.readUInt32BE(20)}, עם �
 const uri = 'data:image/png;base64,' + png.toString('base64');
 const page = readFileSync(PAGE, 'utf8');
 
-/* מחליף את ה-src של תגית הלוגו, ולא מציין מקום חד-פעמי,
-   כדי שהסקריפט יהיה אידמפוטנטי וניתן להרצה חוזרת. */
-const re = /(<img\s+src=")(?:data:image\/png;base64,[^"]*|__LOGO__)(")/;
-if (!re.test(page)) throw new Error('לא נמצאה תגית הלוגו ב-index.html');
+/* מחליף את הערך הקיים, ולא מציין מקום חד-פעמי, כדי שהסקריפט יהיה
+   אידמפוטנטי וניתן להרצה חוזרת. שתי צורות: תגית img בדפים, וקבוע
+   בשם LOGO ב-shared.js שמשרת את אפשרויות העיצוב. */
+const FORMS = [
+  /(<img\s+src=")(?:data:image\/png;base64,[^"]*|__LOGO__)(")/,
+  /(var LOGO = ")(?:data:image\/png;base64,[^"]*|__LOGO__)(")/,
+];
 
-writeFileSync(PAGE, page.replace(re, `$1${uri}$2`));
-console.log(`הוטמע. index.html עכשיו ${(Buffer.byteLength(readFileSync(PAGE, 'utf8')) / 1024).toFixed(1)}KB`);
+const targets = [PAGE, new URL('./variants/shared.js', import.meta.url)];
+let touched = 0;
+
+for (const t of targets) {
+  if (!existsSync(t)) continue;
+  const body = readFileSync(t, 'utf8');
+  const re = FORMS.find((r) => r.test(body));
+  if (!re) { console.log(`דילוג, אין מציין לוגו: ${t.pathname.split('/').pop()}`); continue; }
+  writeFileSync(t, body.replace(re, `$1${uri}$2`));
+  touched++;
+  const kb = (Buffer.byteLength(readFileSync(t, 'utf8')) / 1024).toFixed(1);
+  console.log(`הוטמע ב-${t.pathname.split('/').pop()}, ${kb}KB`);
+}
+
+/* שער: ריצה שלא נגעה בכלום היא כישלון שקט. */
+if (touched === 0) throw new Error('לא הוטמע לוגו בשום קובץ');

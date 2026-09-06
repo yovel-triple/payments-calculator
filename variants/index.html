@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>חמש אפשרויות עיצוב</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap">
+<style>
+:root{ --bg:#E9ECEF; --card:#fff; --ink:#121212; --muted:#6C7378; --rule:#D9DEE1; }
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:400 17px/1.6 Rubik,"Segoe UI",system-ui,sans-serif;
+  padding:36px 20px 64px;
+}
+.wrap{max-width:1320px;margin:0 auto}
+h1{margin:0 0 6px;font-size:1.55rem;font-weight:700}
+.sub{margin:0 0 28px;color:var(--muted);max-width:62ch}
+.sub b{color:var(--ink);font-weight:500}
+
+.grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.opt{background:var(--card);border:1px solid var(--rule);display:flex;flex-direction:column}
+.opt header{
+  display:flex;align-items:center;gap:11px;padding:13px 16px;border-bottom:1px solid var(--rule);
+}
+.num{
+  flex:0 0 auto;width:28px;height:28px;display:grid;place-items:center;
+  background:var(--ink);color:#fff;font-weight:700;font-size:.95rem;
+}
+.opt header .t{font-weight:700;font-size:1rem;line-height:1.25}
+.opt header .t small{display:block;font-weight:400;font-size:.83rem;color:var(--muted)}
+.opt header a{
+  margin-inline-start:auto;flex:0 0 auto;font-size:.83rem;color:var(--ink);
+  border:1px solid var(--ink);padding:6px 11px;text-decoration:none;white-space:nowrap;
+}
+.opt header a:hover{background:var(--ink);color:#fff}
+.frame{position:relative;height:660px;overflow:hidden;background:#fff}
+.frame iframe{width:100%;height:100%;border:0;display:block}
+footer{margin-top:34px;color:var(--muted);font-size:.92rem;max-width:70ch}
+footer b{color:var(--ink);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>חמש אפשרויות עיצוב</h1>
+  <p class="sub">
+    כל החמש מציגות <b>אותם נתונים ובאותו סדר</b>, ומריצות את אותו חישוב.
+    ההבדל הוא בעיצוב בלבד. אפשר להקליד בתוך כל אחת מהן כאן בדף.
+    <b>תגיד לי מספר.</b>
+  </p>
+
+  <div class="grid">
+
+    <section class="opt">
+      <header>
+        <span class="num">1</span>
+        <span class="t">קבלה<small>עמודה צרה, קו מנוקד, בלי מסגרות</small></span>
+        <a href="v1.html" target="_blank" rel="noopener">מסך מלא</a>
+      </header>
+      <div class="frame"><iframe src="v1.html" title="אפשרות 1" loading="eager"></iframe></div>
+    </section>
+
+    <section class="opt">
+      <header>
+        <span class="num">2</span>
+        <span class="t">כרטיס עם פס שחור<small>קרקע אפורה, התוספת בפס עליון</small></span>
+        <a href="v2.html" target="_blank" rel="noopener">מסך מלא</a>
+      </header>
+      <div class="frame"><iframe src="v2.html" title="אפשרות 2" loading="eager"></iframe></div>
+    </section>
+
+    <section class="opt">
+      <header>
+        <span class="num">3</span>
+        <span class="t">שתי עמודות<small>קלט ותשובה זה לצד זה, בלי גלילה</small></span>
+        <a href="v3.html" target="_blank" rel="noopener">מסך מלא</a>
+      </header>
+      <div class="frame"><iframe src="v3.html" title="אפשרות 3" loading="lazy"></iframe></div>
+    </section>
+
+    <section class="opt">
+      <header>
+        <span class="num">4</span>
+        <span class="t">טיפוגרפי<small>בלי כרטיסים, קווי שיער ומרווח נדיב</small></span>
+        <a href="v4.html" target="_blank" rel="noopener">מסך מלא</a>
+      </header>
+      <div class="frame"><iframe src="v4.html" title="אפשרות 4" loading="lazy"></iframe></div>
+    </section>
+
+    <section class="opt">
+      <header>
+        <span class="num">5</span>
+        <span class="t">אריחים<small>חמישה מספרים, סריקה במבט אחד</small></span>
+        <a href="v5.html" target="_blank" rel="noopener">מסך מלא</a>
+      </header>
+      <div class="frame"><iframe src="v5.html" title="אפשרות 5" loading="lazy"></iframe></div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p><b>שים לב:</b> החישוב כאן שונה מהדף הראשי. כאן כל התוספת נגבית
+    בתשלום הראשון, לפי מה שאמרת. בדף הראשי היא עדיין נפרסת על כל החודשים.
+    ברגע שתבחר מספר, האפשרות שבחרת הופכת לדף הראשי.</p>
+  </footer>
+
+</div>
+</body>
+</html>
