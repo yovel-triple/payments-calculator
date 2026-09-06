@@ -55,20 +55,25 @@ for (const [n, row] of Object.entries(SHEET)) {
 }
 console.log(`   נבדקו ${cells} תאים`);
 
-/* ── ② פיצול התשלומים מסתכם בדיוק ─────────────────────────────────── */
-console.log('② פיצול לתשלומים מסתכם לסך הכול');
-let splits = 0;
+/* ── ② התשלום החודשי ואחוז התוספת ──────────────────────────────────
+   התוספת מתחלקת שווה בשווה, ולכן `monthly * n` חייב להיות בדיוק
+   סך הכול. ‏`pct` הוא האחוז בפועל אחרי העיגול, ולא האחוז שבטבלה. */
+console.log('② התשלום החודשי ואחוז התוספת');
+let combos = 0;
 for (let amt = 100; amt <= 50000; amt += 137) {
   for (let n = MIN_PAYMENTS; n <= MAX_PAYMENTS; n++) {
     const q = quote(amt, n);
-    splits++;
-    const sum = Math.round((q.withFee.first + q.withFee.rest * (n - 1)) * 100);
-    ok(sum === Math.round(q.total * 100), `${amt} ב-${n}: הפיצול נותן ${sum / 100} במקום ${q.total}`);
+    combos++;
+    ok(Math.abs(q.monthly * n - q.total) < 1e-9, `${amt} ב-${n}: ${q.monthly}×${n} אינו ${q.total}`);
     ok(q.fee % 10 === 0, `${amt} ב-${n}: התוספת ${q.fee} אינה עגולה בעשרות`);
     ok(q.fee >= 0, `${amt} ב-${n}: תוספת שלילית`);
+    ok(Math.abs(q.pct - (q.fee / amt) * 100) < 1e-9, `${amt} ב-${n}: אחוז התוספת שגוי`);
+    /* העיגול כלפי מעלה אינו יכול להוזיל, ולכן האחוז בפועל
+       תמיד גדול או שווה לאחוז שבטבלה. */
+    ok(q.pct >= q.tablePct - 1e-9, `${amt} ב-${n}: ${q.pct}% נמוך מהטבלה ${q.tablePct}%`);
   }
 }
-console.log(`   נבדקו ${splits} צירופים`);
+console.log(`   נבדקו ${combos} צירופים`);
 
 /* ── ③ הטבלה זהה בכל המקומות שמחזיקים אותה ────────────────────────── */
 console.log('③ אין סחיפה בין קובץ הנתונים לדף');
@@ -99,6 +104,14 @@ ok(paymentsFee(4000, 12.5).reason !== null, 'מספר תשלומים לא שלם
 ok(paymentsFee(150, 24).fee === 20, 'המדרגה: 150 ש"ח ב-24 תשלומים = 20 ולא 10');
 ok(paymentsFee(149, 24).fee === 10, 'המדרגה: 149 ש"ח ב-24 תשלומים = 10');
 ok(paymentsFee(1499.9, 12).fee === 60, 'אגורות בקלט: 1499.90 ב-12 = 60');
+{
+  const q = quote(4000, 12);
+  ok(q.fee === 160,                     'הדוגמה: 4,000 ב-12 ⟵ תוספת 160');
+  ok(q.total === 4160,                  'הדוגמה: סך הכול 4,160');
+  ok(Math.abs(q.monthly - 4160 / 12) < 1e-9, 'הדוגמה: כל תשלום 346.67');
+  ok(Math.abs(q.pct - 4) < 1e-9,        'הדוגמה: אחוז התוספת בפועל 4.00%');
+  ok(Math.abs(q.tablePct - 3.782) < 1e-9, 'הדוגמה: האחוז שבטבלה 3.782%');
+}
 
 console.log(`\n${fail === 0 ? '🟢' : '🔴'}  עברו ${pass} · נכשלו ${fail}`);
 if (NEGATIVE) {

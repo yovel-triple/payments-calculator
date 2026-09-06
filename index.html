@@ -160,8 +160,8 @@ body{
     <div class="strip">
       <div class="cell"><h3>סכום מקורי</h3><div class="v" id="o-base"></div></div>
       <div class="cell"><h3>סך הכול לתשלום</h3><div class="v" id="o-total"></div></div>
-      <div class="cell soft"><h3>תשלום ראשון</h3><div class="v" id="o-first"></div></div>
-      <div class="cell soft"><h3 id="o-restlabel"></h3><div class="v" id="o-rest"></div></div>
+      <div class="cell soft"><h3>סכום כל תשלום</h3><div class="v" id="o-monthly"></div></div>
+      <div class="cell soft"><h3>אחוז התוספת מהעסקה</h3><div class="v" id="o-pct"></div></div>
     </div>
   </div>
 
@@ -182,16 +182,16 @@ body{
   }
 
   /* 🔴 פריסת התשלומים, הכרעת יובל 06.09.2026:
-     **כל התוספת נגבית בתשלום הראשון.**
-       תשלום ראשון  = הסכום המקורי חלקי n, ועוד התוספת כולה
-       שאר התשלומים = הסכום המקורי חלקי n
-     השארית של החלוקה נופלת גם היא על הראשון, ולכן הסכימה חוזרת
-     בדיוק לסך הכול ולא נעלמת אגורה. יש על כך שער ב-test.mjs. */
+     **התוספת מתחלקת על כל התשלומים**, ולא נגבית בראשון.
+     זה תיקון של יובל למה שאמר קודם באותו יום, ולכן אין כאן
+     חישוב שארית ואין תשלום ראשון גדול יותר.
+
+     `pct` הוא **אחוז התוספת בפועל**, ולא האחוז שבטבלה. הם נבדלים
+     בגלל העיגול כלפי מעלה לעשרות: על 4,000 ש"ח ב-12 תשלומים
+     הטבלה אומרת 3.782% והתוספת בפועל היא 160, כלומר 4.00%. */
   function plan(amount, n){
     var f = fee(amount, n), total = amount + f;
-    var rest = Math.floor(Math.round(amount * 100) / n);            /* באגורות */
-    var first = Math.round(total * 100) - rest * (n - 1);
-    return { fee:f, total:total, first:first / 100, rest:rest / 100 };
+    return { fee:f, total:total, monthly:total / n, pct:amount > 0 ? (f / amount) * 100 : 0 };
   }
 
   function nis(v, dp){
@@ -246,12 +246,11 @@ body{
 
     var p = plan(a.value, n.value);
 
-    set("o-fee",       nis(p.fee));
-    set("o-base",      nis(a.value));
-    set("o-total",     nis(p.total));
-    set("o-first",     nis(p.first, 2));
-    set("o-rest",      nis(p.rest, 2));
-    set("o-restlabel", (n.value - 1) + " התשלומים הבאים");
+    set("o-fee",     nis(p.fee));
+    set("o-base",    nis(a.value));
+    set("o-total",   nis(p.total));
+    set("o-monthly", nis(p.monthly, 2));
+    set("o-pct",     p.pct.toFixed(2) + "%");
   }
 
   /* מפריד אלפים ביציאה מהשדה בלבד. הוספתו תוך כדי הקלדה מזיזה את הסמן. */

@@ -64,32 +64,27 @@ export function paymentsFee(amount, payments) {
 /**
  * הפירוט המלא שהמוכר מציג ללקוח.
  *
- * 🔴 התשלום החודשי אינו `total / n` מעוגל. חברות האשראי גובות שארית
- *    בתשלום הראשון, ולכן מוחזרים כאן שני מספרים. סכימה של `first` ועוד
- *    `n-1` פעמים `rest` שווה ל-`total` בדיוק, ויש על כך שער בבדיקות.
+ * 🔴 התוספת מתחלקת שווה בשווה על כל התשלומים, הכרעת יובל 06.09.2026.
+ *    אין תשלום ראשון גדול יותר, ואין חישוב שארית.
+ *
+ * `pct` הוא **אחוז התוספת בפועל**, ולא האחוז שבטבלה. הם נבדלים בגלל
+ * העיגול כלפי מעלה לעשרות: על 4,000 ש"ח ב-12 תשלומים הטבלה אומרת
+ * 3.782% והתוספת בפועל היא 160, כלומר 4.00%.
  */
 export function quote(amount, payments) {
-  const { fee, pct, reason } = paymentsFee(amount, payments);
+  const { fee, pct: tablePct, reason } = paymentsFee(amount, payments);
   const n = Number(payments);
   const base = Number(amount);
   const total = base + fee;
 
-  const split = (sum) => {
-    const cents = Math.round(sum * 100);
-    const rest = Math.floor(cents / n);
-    const first = cents - rest * (n - 1);
-    return { first: first / 100, rest: rest / 100, even: first === rest };
-  };
-
   return {
     amount: base,
     payments: n,
-    pct,
+    tablePct,
     fee,
     total,
     reason,
-    withoutFee: split(base),
-    withFee: split(total),
-    monthlyDiff: (total - base) / n,
+    monthly: n > 0 ? total / n : 0,
+    pct: base > 0 ? (fee / base) * 100 : 0,
   };
 }
