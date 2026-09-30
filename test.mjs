@@ -13,7 +13,7 @@
  *         הדף עצמו מאחור בשקט, והמוכר היה רואה מספר ישן.
  */
 import { readFileSync, existsSync } from 'node:fs';
-import { paymentsFee, quote, PCT, MIN_PAYMENTS, MAX_PAYMENTS } from './payments-fee.mjs';
+import { paymentsFee, quote, PCT, MIN_PAYMENTS, MAX_PAYMENTS, MAX_ALLOWED } from './payments-fee.mjs';
 
 const NEGATIVE = process.argv.includes('--negative');
 let pass = 0, fail = 0;
@@ -111,6 +111,12 @@ ok(paymentsFee(1499.9, 12).fee === 60, 'אגורות בקלט: 1499.90 ב-12 = 6
   ok(Math.abs(q.monthly - 4160 / 12) < 1e-9, 'הדוגמה: כל תשלום 346.67');
   ok(Math.abs(q.pct - 4) < 1e-9,        'הדוגמה: אחוז התוספת בפועל 4.00%');
   ok(Math.abs(q.tablePct - 3.782) < 1e-9, 'הדוגמה: האחוז שבטבלה 3.782%');
+}
+{
+  /* 🔴 התקרה בדף היא 12, הכרעת יובל 30.09.2026. */
+  const m = page.match(/var MIN = (\d+), MAX = (\d+);/);
+  ok(m && Number(m[2]) === MAX_ALLOWED, `הדף חוסם מעל ${MAX_ALLOWED} תשלומים (נמצא ${m && m[2]})`);
+  ok(page.includes(`4 עד ${MAX_ALLOWED}</span>`), `הרמז בשדה אומר 4 עד ${MAX_ALLOWED}`);
 }
 
 console.log(`\n${fail === 0 ? '🟢' : '🔴'}  עברו ${pass} · נכשלו ${fail}`);

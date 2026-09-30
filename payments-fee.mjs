@@ -28,6 +28,9 @@ export const PCT = Object.freeze(
 export const MIN_PAYMENTS = Math.min(...Object.keys(PCT).map(Number));
 export const MAX_PAYMENTS = Math.max(...Object.keys(PCT).map(Number));
 
+/** 🔴 המרב שהחברה מאפשרת, הכרעת יובל 30.09.2026. הטבלה ממשיכה עד 24 כנתון בלבד. */
+export const MAX_ALLOWED = 12;
+
 /**
  * מחשב את תוספת התשלומים.
  *

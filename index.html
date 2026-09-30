@@ -142,7 +142,7 @@ body{
     </div>
 
     <div class="field" id="f-pay">
-      <label for="payments">מספר תשלומים <span class="hint">4 עד 24</span></label>
+      <label for="payments">מספר תשלומים <span class="hint">4 עד 12</span></label>
       <div class="box">
         <input id="payments" type="text" inputmode="numeric" autocomplete="off"
                value="12" aria-describedby="e-pay">
@@ -172,7 +172,9 @@ body{
   "use strict";
 
   var PCT = JSON.parse(document.getElementById("fee-table").textContent);
-  var MIN = 4, MAX = 24;
+  /* 🔴 עד 12 תשלומים בלבד, הכרעת יובל 30.09.2026: החברה אינה מאפשרת יותר.
+     האחוזים של 13 עד 24 נשארים בטבלה כנתון, ואינם זמינים בדף. */
+  var MIN = 4, MAX = 12;
 
   /* התוספת. חשבון שלמים בלבד: הסכום באגורות והאחוז במאיות האחוז,
      ולכן אין כאן ולו פעולה אחת בנקודה צפה שיכולה להקפיץ עשרת שלמה. */
